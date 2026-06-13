@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>World Cup 2026 Friend Tracker v17</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0f7b3f}iframe{border:0;width:100%;height:100%;display:block}</style></head><body><iframe id="tracker" src="appv15.html?v=17"></iframe><script>
+const frame=document.getElementById('tracker');
+function norm(x){return String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
+function uniquePush(arr,item,key){if(!arr.some(x=>key(x)===key(item)))arr.push(item)}
+function pickedTeams(doc, win){try{return win.fGroups ? win.fGroups() : win.groups}catch(e){return win.groups||[]}}
+function installEnhancements(){
+ const w=frame.contentWindow,d=frame.contentDocument;if(!w||!d)return;
+ const cards=d.querySelector('.cards'); if(!cards)return;
+ cards.style.gridTemplateColumns='repeat(5,1fr)';
+ let style=d.getElementById('v17-style'); if(!style){style=d.createElement('style');style.id='v17-style';style.textContent='@media(max-width:1150px){.cards{grid-template-columns:repeat(3,1fr)!important}}@media(max-width:760px){.cards{grid-template-columns:1fr!important}} .v17match{display:block;margin:4px 0;padding:6px 8px;border-radius:10px;background:#eef7ff;color:#075985;font-weight:900;font-size:12px}';d.head.appendChild(style)}
+ let statusCard=d.getElementById('tournamentStatusCard');
+ if(!statusCard){statusCard=d.createElement('div');statusCard.className='card';statusCard.id='tournamentStatusCard';statusCard.innerHTML='<h3>🏁 Tournament Status</h3><div class="big" id="stillInCount">—</div><div class="txt" id="tournamentStatusText">Still in vs eliminated teams will show here</div>';cards.appendChild(statusCard)}
+ const todayCard=[...cards.querySelectorAll('.card')].find(c=>(c.querySelector('h3')||{}).textContent&&((c.querySelector('h3')||{}).textContent.includes('Teams Playing')));
+ if(todayCard){todayCard.querySelector('h3').textContent='⚽ Teams Playing Next 24 Hours';}
+ updateV17();
+}
+function fmtTime(w,d){try{return new Intl.DateTimeFormat('en-US',{weekday:'short',hour:'numeric',minute:'2-digit',timeZone:w.id('tz').value||Intl.DateTimeFormat().resolvedOptions().timeZone}).format(new Date(d))}catch(e){return new Date(d).toLocaleString()}}
+function updateV17(){
+ const w=frame.contentWindow,d=frame.contentDocument;if(!w||!d||!w.matches||!w.groups)return;
+ const gs=pickedTeams(d,w)||[];
+ const now=new Date(),end=new Date(now.getTime()+24*3600000),items=[];
+ (w.matches||[]).filter(m=>(m.state==='pre'||m.state==='in')&&new Date(m.date)>=new Date(now.getTime()-2*3600000)&&new Date(m.date)<=end).sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(m=>{
+   [m.awayTeam,m.homeTeam].forEach(t=>{let groups=[];try{groups=w.picked(t,gs)}catch(e){} if(groups&&groups.length){const opp=norm(t)===norm(m.homeTeam)?m.awayTeam:m.homeTeam;uniquePush(items,{team:t,opp:opp,time:fmtTime(w,m.date),state:m.state},x=>norm(x.team)+'|'+x.time)}})
+ });
+ const count=d.getElementById('todayCount'), text=d.getElementById('todayTeams');
+ if(count) count.textContent=items.length;
+ if(text){
+  if(items.length){text.innerHTML=items.map(x=>'<span class="v17match">'+x.team+' vs '+x.opp+' • '+x.time+'</span>').join('');}
+  else {text.textContent='No picked teams play in the next 24 hours';}
+ }
+ const seen={},teams=[];(w.groups||[]).forEach(g=>(g.teams||[]).forEach(t=>{const n=norm(t);if(!seen[n]){seen[n]=1;teams.push(t)}}));
+ let eliminated=[],still=[],notStarted=[];teams.forEach(t=>{let s='';try{s=w.status(t).txt||''}catch(e){} if(s.includes('Eliminated'))eliminated.push(t);else{still.push(t);if(s.includes('Not Played'))notStarted.push(t)}});
+ const si=d.getElementById('stillInCount'), tt=d.getElementById('tournamentStatusText');
+ if(si) si.textContent=still.length+' Still In';
+ if(tt) tt.textContent='Eliminated: '+eliminated.length+' • Not played yet: '+notStarted.length+' • Total picked teams: '+teams.length;
+}
+frame.addEventListener('load',()=>{setTimeout(installEnhancements,800);setInterval(()=>{try{installEnhancements();updateV17()}catch(e){}},2000)});
+</script></body></html>
