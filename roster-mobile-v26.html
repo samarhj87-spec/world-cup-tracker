@@ -2,9 +2,11 @@
 const f=document.getElementById('tracker');
 function cleanTeam(x){return String(x||'').replace('⚽','').trim()}
 function getInner(){const d1=f.contentDocument;if(!d1)return null;const inner=d1.querySelector('iframe');return inner&&inner.contentDocument?{d:inner.contentDocument,w:inner.contentWindow}:{d:d1,w:f.contentWindow}}
-function applyGreen(){const obj=getInner();if(!obj)return;const d=obj.d,w=obj.w;if(!d)return;let s=d.getElementById('win-green-style');if(!s){s=d.createElement('style');s.id='win-green-style';s.textContent=`.rosterScore.wonPts{background:#dcfce7!important;color:#087443!important;border:1px solid #86efac!important}.rosterTeam.wonTeam{border-color:#86efac!important;background:#f0fdf4!important}`;d.head.appendChild(s)}
+function removeTeamsCreatingPoints(d){if(!d)return;const pt=d.getElementById('pointTeams');if(pt){const box=pt.closest('.wide')||pt.closest('div');if(box)box.remove();else pt.remove()}[...d.querySelectorAll('h2,h3')].forEach(h=>{if((h.textContent||'').toLowerCase().includes('teams creating points')){const box=h.closest('.wide')||h.closest('div');if(box)box.remove();else h.remove()}});[...d.querySelectorAll('.wide,.grid>div')].forEach(box=>{if((box.textContent||'').toLowerCase().includes('teams creating points'))box.remove()})}
+function applyGreen(){const obj=getInner();if(!obj)return;const d=obj.d,w=obj.w;if(!d)return;let s=d.getElementById('win-green-style');if(!s){s=d.createElement('style');s.id='win-green-style';s.textContent=`.rosterScore.wonPts{background:#dcfce7!important;color:#087443!important;border:1px solid #86efac!important;animation:none!important;transition:none!important}.rosterTeam.wonTeam{border-color:#86efac!important;background:#f0fdf4!important;animation:none!important;transition:none!important}`;d.head.appendChild(s)}
+removeTeamsCreatingPoints(d);
 [...d.querySelectorAll('.rosterTeam')].forEach(card=>{const nameEl=card.querySelector('.rosterTeamName');const scoreEl=card.querySelector('.rosterScore');if(!nameEl||!scoreEl)return;let team=cleanTeam(nameEl.textContent);let won=false;try{won=(w.rec(team).w||0)>0}catch(e){won=(card.textContent||'').includes('1W')||(card.textContent||'').includes('2W')||(card.textContent||'').includes('3W')}if(won){scoreEl.classList.add('wonPts');card.classList.add('wonTeam')}else{scoreEl.classList.remove('wonPts');card.classList.remove('wonTeam')}});
 try{f.style.height=d.documentElement.scrollHeight+'px'}catch(e){}
 }
-f.addEventListener('load',()=>{setTimeout(applyGreen,1500);setInterval(applyGreen,1000)});
+f.addEventListener('load',()=>{setTimeout(applyGreen,1500);setInterval(applyGreen,1500)});
 </script></body></html>
