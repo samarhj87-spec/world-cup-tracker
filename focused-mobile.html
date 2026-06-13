@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Focused Mobile World Cup Tracker</title><style>html,body{margin:0;width:100%;height:100%;background:#0f7b3f;overflow:auto}iframe{border:0;width:100%;min-height:100vh;display:block}</style></head><body><iframe id="tracker" src="appv15.html?focused=1"></iframe><script>
+const f=document.getElementById('tracker');
+function norm(x){return String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
+function uniq(arr,item,key){if(!arr.some(x=>key(x)===key(item)))arr.push(item)}
+function fix(){const d=f.contentDocument,w=f.contentWindow;if(!d||!w)return;let s=d.getElementById('focused-mobile-style');if(!s){s=d.createElement('style');s.id='focused-mobile-style';s.textContent=`
+html,body{overflow-x:hidden!important;max-width:100%!important;height:auto!important}
+.top{position:static!important;top:auto!important;padding:10px!important;display:block!important}
+.scorebar{position:static!important;display:grid!important;grid-template-columns:1fr!important;gap:8px!important;border-radius:18px!important;padding:14px!important;margin:0!important;box-shadow:0 6px 14px #0003!important}
+.scorebar .big{font-size:24px!important;line-height:1.1!important;white-space:normal!important;color:white!important}.score{font-size:34px!important;line-height:1!important}
+.scorebar button,.ghost{display:none!important}
+.hero .ball{display:none!important}.hero{grid-template-columns:1fr!important;border-radius:18px!important;margin-bottom:10px!important}.hero>div:first-child{padding:18px!important}.hero h1{font-size:28px!important;line-height:1.05!important;margin-bottom:8px!important}.hero p{font-size:14px!important;line-height:1.35!important;margin:6px 0!important}
+header,main{padding:10px!important;max-width:100%!important}.toolbar,.scheduleFilters{grid-template-columns:1fr!important;border-radius:18px!important;padding:12px!important;gap:10px!important;margin:10px 0!important}.toolbar>div:nth-child(6){display:none!important}
+select,input,button{font-size:16px!important;min-height:46px!important;width:100%!important}
+.cards{display:none!important}.grid{grid-template-columns:1fr!important;border-radius:18px!important;padding:12px!important;margin-bottom:10px!important}.grid:nth-of-type(1)>div:nth-child(2){display:none!important}.grid:nth-of-type(1){order:-1!important}
+.wide{border-radius:18px!important;padding:12px!important;margin-bottom:10px!important}h2{font-size:22px!important;line-height:1.15!important}.row{grid-template-columns:1fr!important;gap:6px!important;margin:12px 0!important}.bar{height:18px!important}.teamGrid{grid-template-columns:1fr!important}.tile,.winBox{border-radius:14px!important;padding:10px!important}.teamPill,.pill{font-size:12px!important;white-space:normal!important;line-height:1.2!important}
+table{min-width:760px!important;font-size:13px!important}th,td{padding:8px!important}`;d.head.appendChild(s)}
+const alertDiv=[...d.querySelectorAll('.toolbar>div')].find(x=>/Notifications|Enable Alerts/i.test(x.textContent||''));if(alertDiv)alertDiv.remove();
+const top=d.querySelector('.top');if(top)top.style.position='static';const heroBall=d.querySelector('.hero .ball');if(heroBall)heroBall.remove();
+const secondGrid=d.querySelector('.grid:nth-of-type(1)>div:nth-child(2)');if(secondGrid)secondGrid.remove();
+updateBanner(d,w);try{f.style.height=d.documentElement.scrollHeight+'px'}catch(e){}
+}
+function updateBanner(d,w){if(!w.matches||!w.groups||!w.picked)return;const gs=w.fGroups?w.fGroups():w.groups;const now=new Date(),end=new Date(now.getTime()+24*3600000),items=[];(w.matches||[]).filter(m=>(m.state==='pre'||m.state==='in')&&new Date(m.date)>=new Date(now.getTime()-2*3600000)&&new Date(m.date)<=end).sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(m=>[m.awayTeam,m.homeTeam].forEach(t=>{let p=[];try{p=w.picked(t,gs)}catch(e){}if(p&&p.length){const opp=norm(t)===norm(m.homeTeam)?m.awayTeam:m.homeTeam;uniq(items,{team:t,opp,time:w.fmt?w.fmt(m.date):new Date(m.date).toLocaleString()},x=>norm(x.team)+'|'+x.time)}}));const state=d.getElementById('topState'),match=d.getElementById('topMatch'),score=d.getElementById('topScore'),status=d.getElementById('topStatus');if(state)state.textContent='UPCOMING MATCHES';if(match)match.textContent=items.length?items.map(x=>x.team+' vs '+x.opp).join(' • '):'No picked teams in next 24 hours';if(score)score.textContent=items.length;if(status)status.textContent=items.length?items.map(x=>x.time).join(' • '):'Check schedule below for later games'}
+f.addEventListener('load',()=>{setTimeout(fix,800);setInterval(fix,1000)});
+</script></body></html>
