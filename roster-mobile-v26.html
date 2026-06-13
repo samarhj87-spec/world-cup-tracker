@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Winning Points Mobile Roster Tracker</title><style>html,body{margin:0;width:100%;height:100%;background:#0f7b3f;overflow:auto}iframe{border:0;width:100%;min-height:100vh;display:block}</style></head><body><iframe id="tracker" src="roster-mobile-v24.html?v=26"></iframe><script>
+const f=document.getElementById('tracker');
+function cleanTeam(x){return String(x||'').replace('⚽','').trim()}
+function getInner(){const d1=f.contentDocument;if(!d1)return null;const inner=d1.querySelector('iframe');return inner&&inner.contentDocument?{d:inner.contentDocument,w:inner.contentWindow}:{d:d1,w:f.contentWindow}}
+function applyGreen(){const obj=getInner();if(!obj)return;const d=obj.d,w=obj.w;if(!d)return;let s=d.getElementById('win-green-style');if(!s){s=d.createElement('style');s.id='win-green-style';s.textContent=`.rosterScore.wonPts{background:#dcfce7!important;color:#087443!important;border:1px solid #86efac!important}.rosterTeam.wonTeam{border-color:#86efac!important;background:#f0fdf4!important}`;d.head.appendChild(s)}
+[...d.querySelectorAll('.rosterTeam')].forEach(card=>{const nameEl=card.querySelector('.rosterTeamName');const scoreEl=card.querySelector('.rosterScore');if(!nameEl||!scoreEl)return;let team=cleanTeam(nameEl.textContent);let won=false;try{won=(w.rec(team).w||0)>0}catch(e){won=(card.textContent||'').includes('1W')||(card.textContent||'').includes('2W')||(card.textContent||'').includes('3W')}if(won){scoreEl.classList.add('wonPts');card.classList.add('wonTeam')}else{scoreEl.classList.remove('wonPts');card.classList.remove('wonTeam')}});
+try{f.style.height=d.documentElement.scrollHeight+'px'}catch(e){}
+}
+f.addEventListener('load',()=>{setTimeout(applyGreen,1500);setInterval(applyGreen,1000)});
+</script></body></html>
