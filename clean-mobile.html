@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Clean Mobile World Cup Tracker</title><style>html,body{margin:0;width:100%;height:100%;background:#0f7b3f;overflow:auto}iframe{border:0;width:100%;min-height:100vh;display:block}</style></head><body><iframe id="tracker" src="appv15.html?clean=1"></iframe><script>
+const f=document.getElementById('tracker');
+function fix(){const d=f.contentDocument,w=f.contentWindow;if(!d||!w)return;let s=d.getElementById('clean-mobile-style');if(!s){s=d.createElement('style');s.id='clean-mobile-style';s.textContent=`
+html,body{overflow-x:hidden!important;max-width:100%!important;height:auto!important}
+.top{display:none!important}
+.hero .ball{display:none!important}
+.hero{grid-template-columns:1fr!important;border-radius:18px!important;margin-bottom:10px!important}
+.hero>div:first-child{padding:18px!important}
+.hero h1{font-size:28px!important;line-height:1.05!important;margin-bottom:8px!important}
+.hero p{font-size:14px!important;line-height:1.35!important;margin:6px 0!important}
+header,main{padding:10px!important;max-width:100%!important}
+.toolbar,.scheduleFilters{grid-template-columns:1fr!important;border-radius:18px!important;padding:12px!important;gap:10px!important;margin:10px 0!important}
+.toolbar>div:nth-child(5){order:-1!important}
+select,input,button{font-size:16px!important;min-height:46px!important;width:100%!important}
+.cards{grid-template-columns:1fr!important;gap:10px!important;margin-bottom:10px!important}
+.card{min-height:auto!important;border-radius:18px!important;padding:14px!important}
+.card h3{font-size:15px!important;margin-bottom:6px!important}
+.big{font-size:28px!important;line-height:1.08!important;word-break:normal!important}
+.txt{font-size:13px!important;line-height:1.35!important}
+.grid{grid-template-columns:1fr!important;border-radius:18px!important;padding:12px!important;margin-bottom:10px!important}
+.wide{border-radius:18px!important;padding:12px!important;margin-bottom:10px!important}
+h2{font-size:22px!important;line-height:1.15!important}
+.row{grid-template-columns:1fr!important;gap:6px!important;margin:12px 0!important}
+.bar{height:18px!important}.teamGrid{grid-template-columns:1fr!important}.tile,.winBox{border-radius:14px!important;padding:10px!important}.teamPill,.pill{font-size:12px!important;white-space:normal!important;line-height:1.2!important}
+table{min-width:760px!important;font-size:13px!important}th,td{padding:8px!important}
+#todayTeams .v17match{font-size:12px!important;line-height:1.25!important;padding:7px 8px!important;margin:5px 0!important}
+`;d.head.appendChild(s)}
+const top=d.querySelector('.top');if(top)top.remove();
+const heroBall=d.querySelector('.hero .ball');if(heroBall)heroBall.remove();
+const topBtns=[...d.querySelectorAll('#refreshTop')];topBtns.forEach(b=>b.remove());
+const btns=[...d.querySelectorAll('button')].filter(b=>/refresh/i.test(b.textContent||''));btns.slice(1).forEach(b=>b.closest('div')?b.closest('div').remove():b.remove());
+try{f.style.height=d.documentElement.scrollHeight+'px'}catch(e){}
+}
+f.addEventListener('load',()=>{setTimeout(fix,800);setInterval(fix,1000)});
+</script></body></html>
