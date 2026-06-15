@@ -11,8 +11,8 @@ function sync(app,from){pairValue(app,'search','sSearch',from);pairValue(app,'fr
 function isLiveMatch(m){return ['in','live','playing'].includes(norm(m&&m.state))||['in','live','playing'].includes(norm(m&&m.status))}
 function patchScoreText(){const {wrapWin}=getDocs();if(!wrapWin)return;wrapWin.scoreText=function(m){if(m.state==='pre')return `${m.homeTeam} 0 - 0 ${m.awayTeam}`;let lead='';if(Number(m.homeScore)>Number(m.awayScore))lead=m.homeTeam;if(Number(m.awayScore)>Number(m.homeScore))lead=m.awayTeam;let label=isLiveMatch(m)?'Winning':'Winner';return `${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam}${lead?'<div class="wcWinner">'+label+': '+lead+'</div>':''}`};}
 function applyFilters(from){const {wrapWin,app,appWin}=getDocs();if(!app)return;sync(app,from);patchScoreText();try{if(appWin&&typeof appWin.refresh==='function')appWin.refresh()}catch(e){}try{if(wrapWin&&typeof wrapWin.update==='function')wrapWin.update(from)}catch(e){}resize();}
-function install(){const {app}=getDocs();if(!app||app.__filterStableV64)return;['search','sSearch','friend','sFriend','status','sStatus','tz','sTz'].forEach(id=>{const el=app.getElementById(id);if(!el)return;el.addEventListener('input',()=>setTimeout(()=>applyFilters(id),20));el.addEventListener('change',()=>setTimeout(()=>applyFilters(id),20));});app.__filterStableV64=true;}
+function install(){const {app}=getDocs();if(!app||app.__filterStableV65)return;['search','sSearch','friend','sFriend','status','sStatus','tz','sTz'].forEach(id=>{const el=app.getElementById(id);if(!el)return;el.addEventListener('input',()=>setTimeout(()=>applyFilters(id),20));el.addEventListener('change',()=>setTimeout(()=>applyFilters(id),20));});app.__filterStableV65=true;}
 function resize(){try{const wrap=frame.contentDocument;frame.style.height=Math.max(wrap.documentElement.scrollHeight,window.innerHeight)+'px'}catch(e){}}
 frame.addEventListener('load',()=>{setTimeout(()=>{install();patchScoreText();applyFilters();resize()},500);});
-setInterval(()=>{install();patchScoreText();resize()},500);
+setInterval(()=>{install();patchScoreText();applyFilters();resize()},3000);
 </script></body></html>
