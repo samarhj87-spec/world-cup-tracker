@@ -1,9 +1,9 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>World Cup Mobile Roster Tracker</title><style>html,body{margin:0;width:100%;height:100%;background:#0f7b3f;overflow:auto}iframe{border:0;width:100%;min-height:100vh;display:block}</style></head><body><iframe id="tracker" src="roster-mobile-v26.html?v=60"></iframe><script>
 const frame=document.getElementById('tracker');
 const ALIASES={'usa':'united states','u s a':'united states','united states of america':'united states','bosnia and herzegovina':'bosnia','dr congo':'dr congo','congo':'dr congo','ivory coast':'ivory coast','cote d ivoire':'ivory coast','curacao':'curacao','curaçao':'curacao','turkiye':'turkey','türkiye':'turkey'};
-const ALIVE_TEAMS=new Set(['canada','brazil','paraguay','morocco','norway','france','mexico','england','belgium','united states','spain','austria','portugal','croatia','switzerland','algeria','australia','egypt','argentina','cape verde','colombia','ghana']);
-const R32_OUT_TEAMS=new Set(['south africa','japan','germany','netherlands','ivory coast','sweden','ecuador','dr congo','senegal','bosnia']);
-const OUT_TEAMS=new Set(['south africa','japan','germany','netherlands','ivory coast','sweden','ecuador','dr congo','senegal','bosnia','south korea','czechia','tunisia','curacao','qatar','new zealand','iran','uruguay','haiti','scotland','turkey','saudi arabia','iraq','jordan','uzbekistan','panama']);
+const ALIVE_TEAMS=new Set(['canada','brazil','paraguay','morocco','norway','france','mexico','england','belgium','united states','spain','portugal','switzerland','algeria','australia','egypt','argentina','cape verde','colombia','ghana']);
+const R32_OUT_TEAMS=new Set(['south africa','japan','germany','netherlands','ivory coast','sweden','ecuador','dr congo','senegal','bosnia','austria','croatia']);
+const OUT_TEAMS=new Set(['south africa','japan','germany','netherlands','ivory coast','sweden','ecuador','dr congo','senegal','bosnia','austria','croatia','south korea','czechia','tunisia','curacao','qatar','new zealand','iran','uruguay','haiti','scotland','turkey','saudi arabia','iraq','jordan','uzbekistan','panama']);
 function norm(x){return String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,'and').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
 function canon(x){let n=norm(x);return ALIASES[n]||n}
 function esc(x){return String(x||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
